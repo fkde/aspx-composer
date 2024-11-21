@@ -1,0 +1,19 @@
+version: '3.5'
+services:
+  app:
+    container_name: ${PROJECT_NAME}
+    image: ${PROJECT_NAME}
+    build:
+      context: ./docker
+    ports:
+      - "443:443" # https
+      - "9003"    # xdebug
+    networks:
+      - app
+    volumes:
+      - ./app:/var/www
+
+networks:
+  app:
+    name: ${PROJECT_NAME}
+    driver: bridge
