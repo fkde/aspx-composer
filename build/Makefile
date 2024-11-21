@@ -2,14 +2,16 @@ ifneq ($(MAKECMDGOALS),clean)
 -include .env
 endif
 
-
 # This should only be called once for the initial setup
 first-install: check-env-file certificates fix-run-permissions install
 
-# Install everything
-install: check-env-file build-app run composer-install message-okay
+# Install everything except composer dependencies
+install: check-env-file build-app run message-okay
 
-# Generate self-signed certificates for local development
+# Install everything including composer dependencies
+install-with-composer: check-env-file build-app run composer-install message-okay
+
+# Generate self-signed certificates for local environment
 certificates: generate-certificates fix-cert-permissions
 
 # Build image separately to use a better caching algorithm
@@ -34,23 +36,23 @@ network-create:
 
 # Enable xDebug
 xdebug-on:
-	@./bin/run.sh "/opt/xdebug.sh on" true
+	@./docker/run.sh "/opt/xdebug.sh on" true
 
 # Disable xDebug
 xdebug-off:
-	@./bin/run.sh "/opt/xdebug.sh off" true
+	@./docker/run.sh "/opt/xdebug.sh off" true
 
 # Install composer dependencies
 composer-install:
-	@./bin/run.sh "composer install"
+	@./docker/run.sh "composer install"
 
 # Install composer dependencies without "require-dev"
 composer-install-prod:
-	@./bin/run.sh "composer install --no-dev"
+	@./docker/run.sh "composer install --no-dev"
 
 # Update all composer dependencies
 composer-update:
-	@./bin/run.sh "composer update"
+	@./docker/run.sh "composer update"
 
 # Print "okay" message
 message-okay:
@@ -66,7 +68,7 @@ fix-cert-permissions:
 	@chmod +r ./docker/rootfs/etc/nginx/ssl/*
 
 fix-run-permissions:
-	@chmod +x bin/run.sh
+	@chmod +x docker/run.sh
 
 check-env-file:
 	@if [ ! -f ".env" ] ; then echo "Error: You first have to copy the .env.dist and adjust the project name to your needs."; exit 2; fi

@@ -3,7 +3,7 @@
 set -a; . ./.env; set +a
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-APP_DIR=$(readlink -f "$DIR/../app")
+APP_DIR=$(readlink -f "$DIR/..")
 
 if [ -z "$1" ]; then
   echo "You have to supply at least one argument."
@@ -14,7 +14,7 @@ function runWithUser() {
   docker run \
     --rm \
     -u www \
-    -v "$APP_DIR":/var/www \
+    -v ./:/var/www \
     "$PROJECT_NAME" \
     sh -c "$1"
 }

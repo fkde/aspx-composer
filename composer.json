@@ -1,5 +1,5 @@
 {
-    "name": "fkde/aspx",
+    "name": "fkde/aspx-composer",
     "type": "library",
     "license": "MIT License",
     "autoload": {
@@ -13,6 +13,7 @@
             "email": "office@florianknapp.de"
         }
     ],
-    "minimum-stability": "stable",
-    "require": {}
+    "minimum-stability": "dev",
+    "require": {},
+    "bin": ["bin/aspx.sh"]
 }
