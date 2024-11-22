@@ -9,19 +9,23 @@ services:
       - "9003"    # xdebug
     networks:
       - app
+#    depends_on:
+#      - mariadb
     volumes:
       - ./:/var/www
 #  mariadb:
 #    image: "mariadb:${MARIADB_VERSION}"
 #    restart: 'always'
 #    volumes:
-#      - "./database/data:/var/lib/mysql"
-#      - "./database/config:/etc/mysql"
+#      - "./database/mariadb/data:/var/lib/mysql"
+#      - "./database/mariadb/config:/etc/mysql"
 #    environment:
-#      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
-#      MYSQL_DATABASE: "${MYSQL_DATABASE}"
-#      MYSQL_USER: "${MYSQL_USER}"
-#      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+#      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+#      MYSQL_DATABASE: "${DB_DATABASE}"
+#      MYSQL_USER: "${DB_USERNAME}"
+#      MYSQL_PASSWORD: "${DB_PASSWORD}"
+#    networks:
+#      - app
 
 networks:
   app:

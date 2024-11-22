@@ -2,4 +2,22 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-php $DIR/../src/bootstrap.php
+show_help() {
+  echo ""
+  echo "Sorry, no help at the moment... what about a motivational quote?"
+  echo ""
+  echo "\"Our Heads Are Round so Our Thoughts Can Change Direction.\""
+  echo "Francis Picabia"
+  echo ""
+}
+
+if [ -z "$1" ]; then
+  show_help
+  exit 1
+fi
+
+
+if [ "$1" == "install" ]; then
+  php $DIR/../src/bootstrap.php
+fi
+
