@@ -2,8 +2,12 @@
 
 namespace Aspx\Utils;
 
+use Aspx\Factory;
+
 class Console
 {
+
+    use Factory;
 
     /**
      * Outputs a message to the console.
@@ -27,6 +31,18 @@ class Console
     public function writeln(string $message): void
     {
         echo PHP_EOL . $message;
+    }
+
+    /**
+     * @param string     $command
+     * @param array|null $output
+     * @param int|null   $status
+     *
+     * @return string
+     */
+    public function exec(string $command, ?array $output = null, ?int $status = null): string
+    {
+        return exec($command, $output, $status);
     }
 
     /**
