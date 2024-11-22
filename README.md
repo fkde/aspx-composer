@@ -1,6 +1,6 @@
 # About this package
 
-Transform your existing PHP Application into a deployable docker container based on the minimal .
+Transform your existing PHP Application into a deployable docker container based on the minimalistic Alpine Linux.
 
 # Requirements
 
