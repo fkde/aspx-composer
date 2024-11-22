@@ -2,87 +2,93 @@
 
 namespace Aspx;
 
+use Aspx\Utils\Console;
+use Aspx\Utils\FileSystem;
+
 class Application
 {
 
+    private string $buildRoot;
+
+    private string $appRoot;
+
     private Console $console;
+
+    private FileSystem $fs;
 
     public function __construct()
     {
+        $this->buildRoot = realpath(__DIR__ . '/../build');
+        $this->appRoot   = realpath(dirname('.'));
+
         $this->console = new Console();
+        $this->fs = FileSystem::factory();
 
         $this->install();
     }
 
     public function install(): void
     {
-        $buildRoot = realpath(__DIR__ . '/../build');
-        $applicationRoot = realpath(dirname('.'));
 
-        if (file_exists($applicationRoot . '/aspx.lock')) {
+        // Check for aspx.lock and prevent further execution
+        if ($this->fs->exists($this->appRoot . '/aspx.lock')) {
             $this->console->writeln('Lock file found. If you think this is an error, delete this file and try again.');
+            return;
         }
 
-        if (! file_exists($applicationRoot . '/.env')) {
+        // Check for .env file and create it if it doesn't exist
+        if ($this->fs->notExists($this->appRoot . '/.env')) {
             $this->console->writeln('No .env file found, creating...');
             $projectName = $this->console->ask('Please tell me your project name:');
-            file_put_contents($applicationRoot . '/.env', PHP_EOL . 'PROJECT_NAME=' . $projectName, FILE_APPEND);
-        } else {
+            file_put_contents($this->appRoot . '/.env', PHP_EOL . 'PROJECT_NAME=' . $projectName, FILE_APPEND);
+        }
+
+        // In case there is a .env file, check for the existence of the env variable
+        if (! $this->hasEnvVar()) {
             $try = 0;
             $this->console->writeln('.env file detected. Please add the variable PROJECT_NAME=<your-project-name> to it while I\'m waiting...');
             do {
-                if (! str_contains(file_get_contents($applicationRoot . '/.env'), 'PROJECT_NAME=')) {
-                    $this->console->write('.');
-                }
+                if (! $this->hasEnvVar()) $this->console->write('.');
                 sleep(3);
                 $try++;
-            } while (! str_contains(file_get_contents($applicationRoot . '/.env'), 'PROJECT_NAME=') && $try < 10);
+            } while (! $this->hasEnvVar() && $try < 20);
         }
 
-        if (! file_exists($applicationRoot . '/Makefile')) {
+        // Copy the Makefile into the application root
+        if ($this->fs->notExists($this->appRoot . '/Makefile')) {
             $this->console->writeln('Copying Makefile...');
-            copy($buildRoot . '/Makefile', $applicationRoot . '/Makefile');
+            $this->fs->copy($this->buildRoot . '/Makefile', $this->appRoot . '/Makefile');
         }
 
-        if (! file_exists($applicationRoot . '/docker-compose.yml')) {
+        // Copy the docker-compose.yml into the application root
+        if (! file_exists($this->appRoot . '/docker-compose.yml')) {
             $this->console->writeln('Copying docker-compose.yml...');
-            copy($buildRoot . '/docker-compose.yml', $applicationRoot . '/docker-compose.yml');
+            $this->fs->copy($this->buildRoot . '/docker-compose.yml', $this->appRoot . '/docker-compose.yml');
         }
 
-        if (! is_dir($applicationRoot . '/docker')) {
+        // Copy the whole docker folder into the application root
+        if (! is_dir($this->appRoot . '/docker')) {
             $this->console->writeln('Creating docker folder...');
-            $this->copyFolder($buildRoot . '/docker', $applicationRoot . '/docker');
+            $this->fs->copyFolder($this->buildRoot . '/docker', $this->appRoot . '/docker');
         }
 
         $this->console->writeln('Docker resources installed successfully, try to start container...');
 
-        exec('cd ' . $applicationRoot . ' && make first-install');
+        // Build container through Makefile command
+        exec('cd ' . $this->appRoot . ' && make first-install');
 
-        //touch($applicationRoot . '/aspx.lock');
+        $this->console->writeln('Done.');
+
+        // Create lock file to prevent running the installer again
+        touch($this->appRoot . '/aspx.lock');
     }
 
-    private function copyFolder($from, $to): void
+    /**
+     * @return bool
+     */
+    private function hasEnvVar(): bool
     {
-        if (!is_dir($to)) {
-            mkdir($to, 0755, true);
-        }
-
-        $files = scandir($from);
-
-        foreach ($files as $file) {
-            if ($file === '.' || $file === '..') {
-                continue; // Verzeichniseinträge für aktuelle und übergeordnete Verzeichnisse überspringen
-            }
-
-            $sourcePath = $from . DIRECTORY_SEPARATOR . $file;
-            $destinationPath = $to . DIRECTORY_SEPARATOR . $file;
-
-            if (is_dir($sourcePath)) {
-                $this->copyFolder($sourcePath, $destinationPath);
-            } else {
-                copy($sourcePath, $destinationPath);
-            }
-        }
+        return str_contains(file_get_contents($this->appRoot . '/.env'), 'PROJECT_NAME=');
     }
 
 }

@@ -16,7 +16,7 @@ certificates: generate-certificates fix-cert-permissions
 
 # Build image separately to use a better caching algorithm
 build-app:
-	@docker build -t ${PROJECT_NAME} docker
+	@docker build -t ${PROJECT_NAME} docker > /dev/null 2>&1 </dev/null
 
 # Open new ssh session into the container
 ssh:
@@ -24,7 +24,7 @@ ssh:
 
 # Run the container
 run:
-	@docker compose up -d --build
+	@docker compose up -d --build > /dev/null 2>&1 </dev/null
 
 # Remove the container and image
 destroy:
@@ -44,7 +44,7 @@ xdebug-off:
 
 # Install composer dependencies
 composer-install:
-	@./docker/run.sh "composer install"
+	@./docker/run.sh "composer install" > /dev/null 2>&1 </dev/null
 
 # Install composer dependencies without "require-dev"
 composer-install-prod:
@@ -62,7 +62,7 @@ message-okay:
 # Use the commands below only if you know what they do #
 ########################################################
 generate-certificates:
-	@openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=DE/ST=BY/L=M/O=${PROJECT_NAME}/CN=${PROJECT_NAME}.local" -keyout ./docker/rootfs/etc/nginx/ssl/privkey.pem -out ./docker/rootfs/etc/nginx/ssl/fullchain.pem
+	@openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=DE/ST=BY/L=M/O=${PROJECT_NAME}/CN=${PROJECT_NAME}.local" -keyout ./docker/rootfs/etc/nginx/ssl/privkey.pem -out ./docker/rootfs/etc/nginx/ssl/fullchain.pem > /dev/null 2>&1 </dev/null
 
 fix-cert-permissions:
 	@chmod +r ./docker/rootfs/etc/nginx/ssl/*
