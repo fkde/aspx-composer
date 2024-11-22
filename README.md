@@ -51,15 +51,14 @@ If you had your own .env file before, just add the required variables to it.
 
 # FAQ
 
-### Why do I need PHP on my host machine installed?
+### Why do I need PHP on my Host Machine installed?
 
-As this is a Composer package, and you are apparently using a composer driven project, 
-one can safely assume that PHP is installed. However, it is planned to remove this dependency in the future 
-by using another docker container with only php and composer to get the initial setup done.
+As this is a Composer package, and Composer itself depends on PHP this is something which is not that easy to achieve. 
+However, it is planned to remove this dependency in the future by using another docker container with only php and composer to get the initial setup done.
 
 ### Is it possible to run Laravel with this setup?
 Yes of course, Laravel works like a charm with this setup. Just keep in mind that you need to have npm and NodeJS somewhere installed. 
-It is possible to do that in the container though.
+It is possible to do that in the container though. It also decreases the resulting image size significantly (~124Mb instead of ~1.66Gb)
 
 ### What does ASPX stand for?
-ASPX is nearly an acronym and stands for *A*lpine *S*upervisor *P*HP Ngin*x*.
+ASPX is nearly an acronym and stands for **A**lpine **S**upervisor **P**HP Ngin**X**.
