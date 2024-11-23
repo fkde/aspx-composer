@@ -88,5 +88,5 @@ However, it is planned to remove this dependency in the future by using another 
 Yes of course, Laravel works like a charm with this setup. Just keep in mind that you need to have npm and NodeJS somewhere installed. 
 It is possible to do that in the container though. It also decreases the resulting image size significantly (~124Mb instead of ~1.66Gb)
 
-### What does ASPX stand for?
+### What does ASPX mean?
 ASPX is nearly an acronym and stands for **A**lpine **S**upervisor **P**HP Ngin**X**.
