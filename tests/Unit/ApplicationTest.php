@@ -2,7 +2,9 @@
 
 namespace Aspx\Tests\Unit;
 
+use Aspx\ActionManager;
 use Aspx\Application;
+use Aspx\Config;
 use Aspx\Utils\Console;
 use Aspx\Utils\FileSystem;
 use PhpParser\Node\Arg;
@@ -20,19 +22,18 @@ class ApplicationTest extends TestCase
         $console = $this->prophesize(Console::class);
         $console->ask(Argument::any())->shouldBeCalled()->willReturn('TestProject');
         $console->writeln(Argument::any())->shouldBeCalled();
-        $console->exec(Argument::any(), Argument::type('null'), Argument::type('null'))->shouldBeCalled();
-
-        $fileSystem = FileSystem::factory();
+        $console->exec(Argument::any())->shouldBeCalled();
 
         $testDir = sys_get_temp_dir() . '/phpunit_test_install_' . uniqid();
         mkdir($testDir, 0755, true);
 
-        $app = new Application([
-            'fileSystem' => $fileSystem,
-            'console' => $console->reveal(),
-            'buildRoot' => null,
-            'appRoot' => $testDir
-        ]);
+        $app = new Application(new Config([
+            'buildRoot' => realpath(__DIR__ . '/../../build'),
+            'appRoot' => $testDir,
+            'am' => ActionManager::factory(),
+            'fs' => FileSystem::factory(),
+            'io' => $console->reveal(),
+        ]));
 
         $app->install();
 

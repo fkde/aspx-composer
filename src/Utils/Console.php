@@ -30,7 +30,7 @@ class Console
      */
     public function writeln(string $message): void
     {
-        echo PHP_EOL . $message;
+        print PHP_EOL . $message;
     }
 
     /**
@@ -38,9 +38,9 @@ class Console
      * @param array|null $output
      * @param int|null   $status
      *
-     * @return string
+     * @return string|null
      */
-    public function exec(string $command, ?array $output = null, ?int $status = null): string
+    public function exec(string $command, ?array &$output = null, ?int &$status = null):? string
     {
         return exec($command, $output, $status);
     }
@@ -54,7 +54,7 @@ class Console
      */
     public function ask(string $question): string
     {
-        $this->writeln($question);
+        $this->writeln($question . ' ');
         return trim(fgets(STDIN));
     }
 

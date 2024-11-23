@@ -31,7 +31,7 @@ class FileSystem
 
         $parentDir = dirname($dst);
 
-        if (!$this->isWritable($parentDir)) {
+        if (! $this->isWritable($parentDir)) {
             throw new PermissionException('Permission denied to copy file "' . $src . '" to "' . $dst . '"');
         }
 
@@ -49,7 +49,7 @@ class FileSystem
      */
     public function copyFolder(string $src, string $dst): void
     {
-        if (!$this->isDir($dst)) {
+        if ($this->exists($src) && !$this->isDir($dst)) {
             $this->mkDir($dst);
         }
 
@@ -104,7 +104,7 @@ class FileSystem
      */
     public function read(string $file): string|array
     {
-        if (is_dir($file)) {
+        if ($this->isDir($file)) {
             return $this->scanDir($file);
         }
 

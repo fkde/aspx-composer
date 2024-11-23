@@ -2,11 +2,14 @@
 
 require_once './vendor/autoload.php';
 
-$config = [
-    'fileSystem' => \Aspx\Utils\FileSystem::factory(),
-    'console' => \Aspx\Utils\Console::factory(),
+$config = new \Aspx\Config([
+    'appRoot'   => realpath(dirname('.')),
     'buildRoot' => realpath(__DIR__ . '/../build'),
-    'appRoot' => realpath(dirname('.')),
-];
+    'am'        => \Aspx\ActionManager::factory(),
+    'fs'        => \Aspx\Utils\FileSystem::factory(),
+    'io'        => \Aspx\Utils\Console::factory(),
+]);
 
 (new \Aspx\Application($config))->install();
+
+print PHP_EOL . PHP_EOL;

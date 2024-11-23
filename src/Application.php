@@ -2,91 +2,60 @@
 
 namespace Aspx;
 
-use Aspx\Utils\Console;
 use Aspx\Utils\FileSystem;
+use Aspx\Actions\CopyMakefileAction;
+use Aspx\Actions\DotEnvCreateAction;
+use Aspx\Actions\LockFileCheckAction;
+use Aspx\Actions\CreateLockFileAction;
+use Aspx\Actions\DotEnvValidateAction;
+use Aspx\Actions\StartContainerAction;
+use Aspx\Actions\ShowSplashScreenAction;
+use Aspx\Actions\CopyDockerFolderAction;
+use Aspx\Actions\CopyDockerComposeAction;
+use Aspx\Exception\DirectoryNotFoundException;
 
 class Application
 {
 
-    private string $buildRoot;
-
-    private string $appRoot;
-
-    private Console $io;
+    private ActionManager $am;
 
     private FileSystem $fs;
 
-    public function __construct(array $config)
+    /**
+     * @param Config $config
+     *
+     * @throws DirectoryNotFoundException
+     */
+    public function __construct(Config $config)
     {
-        $this->buildRoot = $config['buildRoot'] ?? realpath(__DIR__ . '/../build');
-        $this->appRoot   = $config['appRoot'];
+        $this->am = $config->get('am');
+        $this->am->setConfig($config);
 
-        $this->fs = $config['fileSystem'];
-        $this->io = $config['console'];
-    }
+        $this->fs = $config->get('fs');
 
-    public function install(): void
-    {
-
-        // Check for aspx.lock and prevent further execution
-        if ($this->fs->exists($this->appRoot . '/aspx.lock')) {
-            $this->io->writeln('Lock file found. If you think this is an error, delete this file and try again.');
-            return;
+        if ($this->fs->notExists($config->get('buildRoot'))
+            || $this->fs->notExists($config->get('appRoot'))
+        ) {
+            throw new DirectoryNotFoundException('Check if both the `buildRoot` and the `appRoot` exist and ensure they\'re readable.');
         }
-
-        // Check for .env file and create it if it doesn't exist
-        if ($this->fs->notExists($this->appRoot . '/.env')) {
-            $this->io->writeln('No .env file found, creating...');
-            $projectName = $this->io->ask('Please tell me your project name:');
-            $this->fs->write($this->appRoot . '/.env', PHP_EOL . 'PROJECT_NAME=' . $projectName, FILE_APPEND);
-        }
-
-        // In case there is a .env file, check and wait for PROJECT_NAME variable
-        if (! $this->hasEnvVar()) {
-            $try = 0;
-            $this->io->writeln('.env file detected. Please add the variable PROJECT_NAME=<your-project-name> to it while I\'m waiting...');
-            do {
-                if (! $this->hasEnvVar()) $this->io->write('.');
-                sleep(3);
-                $try++;
-            } while (! $this->hasEnvVar() && $try < 20);
-        }
-
-        // Copy the Makefile into the application root
-        if ($this->fs->notExists($this->appRoot . '/Makefile')) {
-            $this->io->writeln('Copying Makefile...');
-            $this->fs->copyFile($this->buildRoot . '/Makefile', $this->appRoot . '/Makefile');
-        }
-
-        // Copy the docker-compose.yml into the application root
-        if (! file_exists($this->appRoot . '/docker-compose.yml')) {
-            $this->io->writeln('Copying docker-compose.yml...');
-            $this->fs->copyFile($this->buildRoot . '/docker-compose.yml', $this->appRoot . '/docker-compose.yml');
-        }
-
-        // Copy the whole docker folder into the application root
-        if (! is_dir($this->appRoot . '/docker')) {
-            $this->io->writeln('Creating docker folder...');
-            $this->fs->copyFolder($this->buildRoot . '/docker', $this->appRoot . '/docker');
-        }
-
-        $this->io->writeln('Docker resources installed successfully, try to start container...');
-
-        // Build container through Makefile command
-        $this->io->exec('cd ' . $this->appRoot . ' && make first-install');
-
-        $this->io->writeln('Done.');
-
-        // Create lock file to prevent running the installer again
-        touch($this->appRoot . '/aspx.lock');
     }
 
     /**
-     * @return bool
+     * @return void
      */
-    private function hasEnvVar(): bool
+    public function install(): void
     {
-        return str_contains($this->fs->read($this->appRoot . '/.env'), 'PROJECT_NAME=');
+        $this->am->add(new ShowSplashScreenAction());
+        $this->am->add(new LockFileCheckAction());
+        $this->am->add(new DotEnvCreateAction());
+        $this->am->add(new DotEnvValidateAction());
+        $this->am->add(new CopyMakefileAction());
+        $this->am->add(new CopyDockerComposeAction());
+        $this->am->add(new CopyDockerFolderAction());
+        $this->am->add(new StartContainerAction());
+        $this->am->add(new CreateLockFileAction());
+
+        $this->am->processActions();
     }
 
 }

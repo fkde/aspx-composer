@@ -24,7 +24,7 @@ ssh:
 
 # Run the container
 run:
-	@docker compose up -d --build > /dev/null 2>&1 </dev/null
+	@docker compose up -d --build
 
 # Remove the container and image
 destroy:

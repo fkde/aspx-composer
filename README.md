@@ -1,6 +1,35 @@
 # About this package
 
-Transform your existing PHP Application into a deployable docker container based on the minimalistic Alpine Linux.
+Transform your existing PHP Application into a deployable docker container based on Alpine Linux.
+
+# What you'll get
+
+- PHP 8.3
+- Nginx 1.26.2
+- Curl
+
+### PHP Modules
+
+- php83-fpm
+- php83-json
+- php83-ldap
+- php83-curl
+- php83-phar
+- php83-pdo
+- php83-iconv
+- php83-mbstring
+- php83-pdo_mysql
+- php83-simplexml
+- php83-dom
+- php83-ctype
+- php83-tokenizer
+- php83-xml
+- php83-xmlwriter
+- php83-session
+- php83-pecl-xdebug
+
+Everything together is just as big as ~92.4Mb, which makes it ideal for fast and storage friendly CI/CD Pipelines. 
+With npm and Node.js installed it is barely reaching ~150Mb.
 
 # Requirements
 
@@ -26,12 +55,10 @@ $> ./vendor/bin/aspx install
 After a few seconds you should be informed about the container being started. 
 You should now be able to call https://localhost in your favorite browser.
 
-### After installation
-
 When the installation finished you will notice a few changes in your project.
 There should be several new files and a folder added.
 
-### In detail, these are:
+### Added files
 
 | Entity                 | Description                                                                                                                                                                                                 |
 |------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -40,7 +67,8 @@ There should be several new files and a folder added.
 | **.env:**              | <span style="font-size: .7rem">Is created only when there is no .env present.</span>                                                                                                                        |
 | **Makefile:**          | <span style="font-size: .7rem">This file provides a set of useful helpers, like a switch for Xdebug. Fore more information, take a look at the origin of this project: https://github.com/fkde/aspx </span> |
 
-You are now theoretically able to develop your application within Docker. Practically, you'll need something that stores data.
+You are now theoretically able to develop your application within Docker. 
+Practically, you'll probably need a database to store your visitors' data.
 
 # Attaching a Database
 
