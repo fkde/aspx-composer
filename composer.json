@@ -2,7 +2,7 @@
     "name": "fkde/aspx",
     "description": "Transform your existing PHP application into a deployable docker container in seconds.",
     "type": "library",
-    "license": "MIT License",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "Aspx\\": "src/",

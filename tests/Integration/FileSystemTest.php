@@ -1,11 +1,11 @@
 <?php
 
-namespace Aspx\Tests\Unit;
+namespace Aspx\Tests\Integration;
 
-use Aspx\Exception\DirectoryNotFoundException;
-use Aspx\Exception\PermissionException;
 use Aspx\Utils\FileSystem;
 use PHPUnit\Framework\TestCase;
+use Aspx\Exception\PermissionException;
+use Aspx\Exception\DirectoryNotFoundException;
 
 class FileSystemTest extends TestCase
 {
@@ -27,9 +27,7 @@ class FileSystemTest extends TestCase
         $this->fixtureFolderWithContents = $fixturesFolder . self::FIXTURE_FOLDER_WITH_CONTENTS_NAME;
 
         $this->testDir = sys_get_temp_dir() . '/phpunit_test_' . uniqid();
-        $oldMask = umask(0);
         mkdir($this->testDir, 0755, true);
-        umask($oldMask);
     }
 
     protected function tearDown(): void

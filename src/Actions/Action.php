@@ -2,14 +2,13 @@
 
 namespace Aspx\Actions;
 
-use Aspx\ActionInterface;
 use Aspx\Config;
 use Aspx\Utils\Console;
+use Aspx\ActionInterface;
 use Aspx\Utils\FileSystem;
 
 abstract class Action implements ActionInterface
 {
-
     protected string $buildRoot;
 
     protected string $appRoot;
@@ -33,7 +32,7 @@ abstract class Action implements ActionInterface
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
     public function shouldRun(): bool
     {
@@ -41,7 +40,7 @@ abstract class Action implements ActionInterface
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
     public function preventFurtherExecution(): bool
     {
@@ -49,11 +48,11 @@ abstract class Action implements ActionInterface
     }
 
     /**
-     * @return void
+     * @inheritDoc
      */
     public function noRun(): void
     {
-        // Nothing to do
+        // Can be overridden by extending class
     }
 
     /**
