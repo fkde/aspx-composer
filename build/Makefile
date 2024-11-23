@@ -14,25 +14,13 @@ install-with-composer: check-env-file build-app run composer-install message-oka
 # Generate self-signed certificates for local environment
 certificates: generate-certificates fix-cert-permissions
 
-# Build image separately to use a better caching algorithm
-build-app:
-	@docker build -t ${PROJECT_NAME} docker > /dev/null 2>&1 </dev/null
-
-# Open new ssh session into the container
-ssh:
-	@docker exec -it -u www ${PROJECT_NAME} /bin/sh
-
 # Run the container
 run:
 	@docker compose up -d --build
 
-# Remove the container and image
-destroy:
-	@docker compose down --rmi=all
-
-# Create the default network based on the application name
-network-create:
-	@docker network create ${PROJECT_NAME}
+# Open new ssh session into the container
+ssh:
+	@docker exec -it -u www ${PROJECT_NAME} /bin/sh
 
 # Enable xDebug
 xdebug-on:
@@ -41,6 +29,18 @@ xdebug-on:
 # Disable xDebug
 xdebug-off:
 	@./docker/run.sh "/opt/xdebug.sh off" true
+
+# Build image separately to use a better caching algorithm
+build-app:
+	@docker build -t ${PROJECT_NAME} docker > /dev/null 2>&1 </dev/null
+
+# Remove the container and image
+destroy:
+	@docker compose down --rmi=all
+
+# Create the default network based on the application name
+network-create:
+	@docker network create ${PROJECT_NAME}
 
 # Install composer dependencies
 composer-install:

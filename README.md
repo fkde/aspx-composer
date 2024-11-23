@@ -43,7 +43,7 @@ With npm and Node.js installed it is barely reaching ~150Mb.
 ## Composer
 
 ```bash
-$> composer require fkde/aspx
+$> composer require fkde/aspx --dev
 ```
 
 From your application root, call the following command:
@@ -76,6 +76,37 @@ We can utilize the `docker-compose.yml` to get a database attached.
 Just uncomment the additional service and provide your credentials in the .env file.
 
 If you had your own .env file before, just add the required variables to it.
+
+# Usage
+
+### Connect to the container
+
+```bash
+$> make ssh
+```
+
+### Activate Xdebug
+
+```bash
+$> make xdebug-on
+```
+
+Deactivate with:
+
+```bash
+$> make xdebug-off
+```
+
+# How does this all work?
+
+### Mount
+Your application is being mounted into the container and is then held in sync by Docker. Inside 
+the container the path is `/var/www`, which is also the directory Nginx is pointing to.
+
+### Permissions
+While building the container, a user is being created inside which is getting 
+the same uid as your user. This means, everything being created by the container is 
+handled as if it was you. That will reduce errors regarding different user permissions to nearly zero.
 
 # FAQ
 
