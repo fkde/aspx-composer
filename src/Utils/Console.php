@@ -18,6 +18,7 @@ class Console
      */
     public function write(string $message): void
     {
+        ob_flush();
         print $message;
     }
 
